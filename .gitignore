@@ -1,3 +1,5 @@
 /node_modules
 /.vscode
 .env
+# why .env file is not ignored?
+# https://stackoverflow.com/questions/48509876/why-isnt-my-env-file-ignored-by-gitignore
