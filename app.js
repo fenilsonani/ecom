@@ -8,6 +8,7 @@ const { default: mongoose } = require('mongoose')
 const colors = require('colors');
 const productRouter = require('./routers/product')
 const catRouter = require('./routers/category')
+const userRouter = require('./routers/user')
 const cors = require('cors')
 mongoose.set('strictQuery', true)
 
@@ -22,6 +23,7 @@ const api_url = process.env.API_URL
 
 app.use(`${api_url}/products`, productRouter)
 app.use(`${api_url}/categories`, catRouter)
+app.use(`${api_url}/users`, userRouter)
 
 // database connection
 mongoose.connect("mongodb+srv://fenil:kb3ndTiaM9JJImmX@cluster0.tleykye.mongodb.net/?retryWrites=true&w=majority", {
