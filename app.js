@@ -6,60 +6,22 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const { default: mongoose } = require('mongoose')
 const colors = require('colors');
-
+const productRouter = require('./routers/product')
+const catRouter = require('./routers/category')
+const cors = require('cors')
+mongoose.set('strictQuery', true)
 
 // start of the code
-mongoose.set('strictQuery', true)
 app.use(bodyParser.json())
 app.use(morgan('tiny'))
+app.use(cors())
+app.options('*', cors())
+
 const api_url = process.env.API_URL
 
-const productSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        // unique: true
-    },
-    image: String,
-    countInStock: Number,
-})
 
-const Product = mongoose.model('Product', productSchema)
-
-// api section 
-app.get(`${api_url}/products`, (req, res) => {
-
-    const productsList = Product.find().then((products) => {
-        res.status(200).json(products)
-    }).catch((err) => {
-        res.status(500).json({
-            error: err,
-            success: false
-        })
-
-    })
-
-})
-
-
-app.post(`${api_url}/products`, (req, res) => {
-    const product = new Product({
-        name: req.body.name,
-        image: req.body.image,
-        countInStock: req.body.countInStock
-    })
-
-    product.save().then((createdProduct) => {
-        res.status(201).json(createdProduct)
-    }).catch((err) => {
-        res.status(500).json({
-            error: err,
-            success: false
-        })
-
-        // res.send(product)
-    })
-})
+app.use(`${api_url}/products`, productRouter)
+app.use(`${api_url}/categories`, catRouter)
 
 // database connection
 mongoose.connect("mongodb+srv://fenil:kb3ndTiaM9JJImmX@cluster0.tleykye.mongodb.net/?retryWrites=true&w=majority", {
