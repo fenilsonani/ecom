@@ -5,47 +5,63 @@ const port = process.env.PORT || 5000
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const { default: mongoose } = require('mongoose')
-
-mongoose.set('strictQuery', true)
-
-app.use(bodyParser.json())
-app.use(morgan('tiny'))
 const colors = require('colors');
 
+
+// start of the code
+mongoose.set('strictQuery', true)
+app.use(bodyParser.json())
+app.use(morgan('tiny'))
 const api_url = process.env.API_URL
 
-console.log(process.env.API_URL);
+const productSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        // unique: true
+    },
+    image: String,
+    countInStock: Number,
+})
 
+const Product = mongoose.model('Product', productSchema)
+
+// api section 
 app.get(`${api_url}/products`, (req, res) => {
 
-    const products = [
-        {
-            id: 1,
-            name: 'Product 1'
-        },
-        {
-            id: 2,
-            name: 'Product 2'
-        },
-        {
-            id: 3,
-            name: 'Product 3'
-        }
-    ]
+    const productsList = Product.find().then((products) => {
+        res.status(200).json(products)
+    }).catch((err) => {
+        res.status(500).json({
+            error: err,
+            success: false
+        })
 
-    res.send(products)
+    })
 
 })
 
 
 app.post(`${api_url}/products`, (req, res) => {
-    const myProduct = req.body
-    console.log(myProduct)
-    res.send(myProduct)
+    const product = new Product({
+        name: req.body.name,
+        image: req.body.image,
+        countInStock: req.body.countInStock
+    })
+
+    product.save().then((createdProduct) => {
+        res.status(201).json(createdProduct)
+    }).catch((err) => {
+        res.status(500).json({
+            error: err,
+            success: false
+        })
+
+        // res.send(product)
+    })
 })
 
-// mongoose code that will connect to the database with local mongodb
-
+// database connection
 mongoose.connect("mongodb+srv://fenil:kb3ndTiaM9JJImmX@cluster0.tleykye.mongodb.net/?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -58,10 +74,11 @@ mongoose.connect("mongodb+srv://fenil:kb3ndTiaM9JJImmX@cluster0.tleykye.mongodb.
         console.log(err)
     })
 
-// what will be CONECTION_STRING
-// mongodb://localhost:27017/eshop-database
 
 
+
+
+// server start
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)
     console.log(`API URL: ${api_url}`)
