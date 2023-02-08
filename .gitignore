@@ -1,7 +1,3 @@
 /node_modules
 /.vscode
-/yarn.lock
-/yarn-error.log
-
-# remove env
 .env
