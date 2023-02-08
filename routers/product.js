@@ -63,7 +63,7 @@ router.post(`/`, async (req, res) => {
 })
 
 router.get('/id/:id', (req, res) => {
-    const product = Product.findById(req.params.id).then((product) => {
+    const product = Product.findById(req.params.id).populate('category').then((product) => {
         if (product) {
             res.status(200).json(product)
         } else {
